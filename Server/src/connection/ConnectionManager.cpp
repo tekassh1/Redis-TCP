@@ -2,10 +2,12 @@
 #include <stdexcept>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+#include <windows.h>
 
 #include <iostream>
 
 #include "ConnectionManager.h"
+#include "CommandManager.h"
 
 using namespace std;
 
@@ -41,8 +43,16 @@ void ConnectionManager::run() {
         }
         else {
             cout << "Client connected successfully!" << endl;
-            char msg[256] = "Hello, my client!";
-            send(new_connection, msg, sizeof(msg), NULL);
+
+            CreateThread(
+                NULL, 
+                0, 
+                CommandManager::process_commands, 
+                (LPVOID) (new_connection), 
+                NULL, 
+                NULL
+            );
+            
         }
         cout << "Client " << cntr << " connected" << endl;
     }

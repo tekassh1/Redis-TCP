@@ -28,10 +28,14 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
     cout << "Connection with server established!" << endl;
+    
+    while (true) {
+        char msg[256]; 
+        string s; cin >> s;
+        for (int i = 0; i < s.length(); i++) msg[i] = s[i];
 
-    char msg[256];
-    recv(connection, msg, sizeof(msg), NULL);
-    cout << msg << endl;
+        send(connection, msg, sizeof(msg), NULL);
+    }
 
     return 0;
 }

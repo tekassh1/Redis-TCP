@@ -4,5 +4,11 @@
 			"path": "Server"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"stdexcept": "cpp",
+			"functional": "cpp",
+			"iostream": "cpp"
+		}
+	}
 }
