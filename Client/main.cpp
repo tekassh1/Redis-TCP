@@ -3,12 +3,24 @@
 #include <winsock2.h>
 #include <Ws2tcpip.h>
 
+#include <csignal>
+
 #define LOCALHOST_ADDR "127.0.0.1"
 #define DEFAULT_PORT 49152
 
 using namespace std;
 
+SOCKET connection;
+
+void signal_handler(int signal) {
+    shutdown(connection, SD_RECEIVE);
+    closesocket(connection);
+    std::exit(signal);
+}
+
 int main(int argc, char *argv[]) {
+    signal(SIGINT, signal_handler);
+
     WSAData wsa_data;
     WORD dll_version = MAKEWORD(2, 2);
     if (WSAStartup(dll_version, &wsa_data) != 0) {
@@ -22,7 +34,7 @@ int main(int argc, char *argv[]) {
     addr.sin_port = htons(DEFAULT_PORT);
     addr.sin_family = AF_INET;
 
-    SOCKET connection = socket(AF_INET, SOCK_STREAM, NULL);
+    connection = socket(AF_INET, SOCK_STREAM, NULL);
     if (connect(connection, (SOCKADDR*)& addr, sizeof(addr)) != 0) {
         cout << "Error connecting to server" << endl;
         exit(1);

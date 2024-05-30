@@ -11,8 +11,9 @@
 
 using namespace std;
 
-ConnectionManager::ConnectionManager(int port) {
+ConnectionManager::ConnectionManager(int port, int max_connections) {
     this->port = port;
+    this->max_connections = max_connections;
 
     WSAData wsa_data;
     WORD dll_version = MAKEWORD(2, 2);
@@ -27,33 +28,39 @@ ConnectionManager::ConnectionManager(int port) {
     s_listen = socket(AF_INET, SOCK_STREAM, NULL);
     bind(s_listen, (SOCKADDR*) &addr, sizeof(addr));
 
+    connections_am = 0;
     listen(s_listen, SOMAXCONN);
 }
 
 void ConnectionManager::run() {
-    SOCKET new_connection;
-    int cntr = 0;
 
     while (true) {
-        cntr++;
-        new_connection = accept(s_listen, (SOCKADDR*) &addr, &sizeofaddr);
+        SOCKET new_connection = accept(s_listen, (SOCKADDR*) &addr, &sizeofaddr);
+
+        if (connections_am == max_connections) {
+            closesocket(new_connection);
+            continue;
+        }
+
+        ConnectionInfo* connection_info = new ConnectionInfo;
+        connection_info->connectionManager = this;
+        connection_info->sock = new_connection;
 
         if (new_connection == 0) {
             cout << "Client connection error!" << endl;
         }
         else {
             cout << "Client connected successfully!" << endl;
-
-            CreateThread(
-                NULL, 
-                0, 
-                CommandManager::process_commands, 
-                (LPVOID) (new_connection), 
-                NULL, 
-                NULL
-            );
-            
+            connections_am++;
+            CreateThread(NULL, 0, CommandManager::process_commands, (LPVOID) (connection_info), NULL, NULL);
         }
-        cout << "Client " << cntr << " connected" << endl;
     }
+}
+
+int ConnectionManager::get_connections_am() {
+    return connections_am;
+}
+
+void ConnectionManager::discconect() {
+    connections_am--;
 }
