@@ -32,10 +32,10 @@ public:
     void run();
 
     int get_connections_am();
-    void discconect();
+    void discconect_user();
 
     void send_connection_status(SOCKET sock, bool status, string s_msg);
-    void deserialize_command(SOCKET sock, int status);
+    void send_command_response(SOCKET sock, string s_msg);
 };
 
 #endif

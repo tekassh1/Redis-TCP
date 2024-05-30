@@ -3,6 +3,7 @@
 
 #include <winsock2.h>
 #include <iostream>
+#include <string>
 
 #include "ConnectionManager.h"
 
@@ -22,6 +23,7 @@ class CommandManager {
 
 public:
     static DWORD WINAPI process_commands(LPVOID sock_pointer);
+    static string read_request(ConnectionInfo* connection_info);
 };
 
 #endif
