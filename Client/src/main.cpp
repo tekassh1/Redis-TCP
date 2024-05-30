@@ -10,6 +10,11 @@
 
 using namespace std;
 
+struct ConnectionStatus {
+    bool connected;
+    char message[256];
+};
+
 SOCKET connection;
 
 void signal_handler(int signal) {
@@ -39,14 +44,20 @@ int main(int argc, char *argv[]) {
         cout << "Error connecting to server" << endl;
         exit(1);
     }
+    
+    char buffer[sizeof(ConnectionStatus)];
+    recv(connection, buffer, sizeof(ConnectionStatus), 0);
+    ConnectionStatus status_struct;
+    memcpy(&status_struct, buffer, sizeof(ConnectionStatus));
+
+    if (!status_struct.connected) {
+        cout << "Error: " << status_struct.message << endl;
+        exit(1);
+    }
     cout << "Connection with server established!" << endl;
     
     while (true) {
-        char msg[256]; 
         string s; cin >> s;
-        for (int i = 0; i < s.length(); i++) msg[i] = s[i];
-
-        send(connection, msg, sizeof(msg), NULL);
     }
 
     return 0;

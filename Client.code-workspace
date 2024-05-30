@@ -4,5 +4,9 @@
 			"path": "Client"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"iostream": "cpp"
+		}
+	}
 }

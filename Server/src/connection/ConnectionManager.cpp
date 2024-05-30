@@ -8,6 +8,7 @@
 
 #include "ConnectionManager.h"
 #include "CommandManager.h"
+#include "SerializationManager.h"
 
 using namespace std;
 
@@ -38,6 +39,7 @@ void ConnectionManager::run() {
         SOCKET new_connection = accept(s_listen, (SOCKADDR*) &addr, &sizeofaddr);
 
         if (connections_am == max_connections) {
+            send_connection_status(new_connection, false, "Server max amount of connections is reached. Please, try later.");
             closesocket(new_connection);
             continue;
         }
@@ -50,11 +52,26 @@ void ConnectionManager::run() {
             cout << "Client connection error!" << endl;
         }
         else {
-            cout << "Client connected successfully!" << endl;
+            cout << "Client connected!" << endl;
+            send_connection_status(new_connection, true, "Connection with server established!");
             connections_am++;
             CreateThread(NULL, 0, CommandManager::process_commands, (LPVOID) (connection_info), NULL, NULL);
         }
     }
+}
+
+void ConnectionManager::send_connection_status(SOCKET sock, bool status, string s_msg) {
+
+    ConnectionStatus status_struct = {
+        .connected = status
+    };
+    strncpy(status_struct.message, s_msg.c_str(), s_msg.length());
+    status_struct.message[sizeof(status_struct.message) - 1] = '\0';
+
+    char buffer[sizeof(ConnectionStatus)];
+    SerializationManager::SerializeResponse(status_struct, buffer);
+
+    send(sock, buffer, sizeof(ConnectionStatus), NULL);
 }
 
 int ConnectionManager::get_connections_am() {

@@ -4,7 +4,10 @@ project(Client)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(Client main.cpp)
+include_directories(${CMAKE_SOURCE_DIR}/include)
+file(GLOB_RECURSE SOURCES "src/*.cpp" "main.cpp")
+
+add_executable(Client ${SOURCES})
 
 target_link_libraries(Client ws2_32)
 

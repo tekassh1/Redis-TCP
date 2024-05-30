@@ -13,6 +13,11 @@ struct ConnectionInfo {
     SOCKET sock;
 };
 
+struct Command {
+    int code;
+    string arg;
+};
+
 class CommandManager {
 
 public:

@@ -4,6 +4,7 @@ project(Server)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+include_directories(${CMAKE_SOURCE_DIR}/include)
 include_directories(${CMAKE_SOURCE_DIR}/include/connection)
 include_directories(${CMAKE_SOURCE_DIR}/include/commands)
 file(GLOB_RECURSE SOURCES "src/*.cpp" "main.cpp")

@@ -13,9 +13,9 @@
 
 using namespace std;
 
-struct Response {
-    int status_code;
-    string message;
+struct ConnectionStatus {
+    bool connected;
+    char message[256];
 };
 
 class ConnectionManager {
@@ -32,8 +32,10 @@ public:
     void run();
 
     int get_connections_am();
-    void new_connection();
     void discconect();
+
+    void send_connection_status(SOCKET sock, bool status, string s_msg);
+    void deserialize_command(SOCKET sock, int status);
 };
 
 #endif
