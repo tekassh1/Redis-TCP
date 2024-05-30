@@ -12,7 +12,6 @@
 using namespace std;
 
 ConnectionManager::ConnectionManager(int port, int max_connections) {
-    this->port = port;
     this->max_connections = max_connections;
 
     WSAData wsa_data;
@@ -23,13 +22,24 @@ ConnectionManager::ConnectionManager(int port, int max_connections) {
 
     sizeofaddr = sizeof(addr);
     InetPton(AF_INET, LOCALHOST_ADDR, &addr.sin_addr.s_addr);
-    addr.sin_port = htons(port);
-    addr.sin_family = AF_INET;
-    s_listen = socket(AF_INET, SOCK_STREAM, NULL);
-    bind(s_listen, (SOCKADDR*) &addr, sizeof(addr));
+    
+    int bind_status = -1;
+    port--;
+    while (bind_status == -1 && ++port <= 65535) {
+        addr.sin_port = htons(port);
+        addr.sin_family = AF_INET;
+        s_listen = socket(AF_INET, SOCK_STREAM, NULL);
+        bind_status = bind(s_listen, (SOCKADDR*) &addr, sizeof(addr));
+    }
+
+    if (bind_status == -1)
+        throw std::runtime_error("All ports from 49152 to 65535 are busy. Please, try later.");
+
+    this->port = port;
 
     connections_am = 0;
     listen(s_listen, SOMAXCONN);
+    cout << "The server has successfully launched on port " << "\u001b[38;5;112m" << port << "\u001b[0m" << endl;
 }
 
 void ConnectionManager::run() {
