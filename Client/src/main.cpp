@@ -54,10 +54,25 @@ int main(int argc, char *argv[]) {
         cout << "Error: " << status_struct.message << endl;
         exit(1);
     }
-    cout << "Connection with server established!" << endl;
+    cout << "Success: " << status_struct.message << endl;
     
     while (true) {
-        string s; cin >> s;
+        cout << ">>> ";
+        string s;
+        getline(cin, s);
+        if (s.length() > 2048) {
+            cout << "Input is too large (Max input size - 2048 symb). Try again." << endl;
+            continue;
+        }
+        int command_size = s.size();
+        send(connection, (char*) &command_size, sizeof(int), NULL);
+        send(connection, s.c_str(), command_size, NULL);
+
+        // int resp_size;
+        // recv(connection, (char*) &resp_size, sizeof(int), NULL);
+        // char response[resp_size + 1];
+        // response[resp_size] = '\0';
+        // recv(connection, response, resp_size, NULL);
     }
 
     return 0;
