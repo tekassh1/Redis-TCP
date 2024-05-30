@@ -38,11 +38,12 @@ Client::Client(int port) {
         string err_msg = "Error: " + recieved;
         throw runtime_error(err_msg);
     }
-    cout << "Success: " << status_struct.message << endl;
+    cout << "\u001b[38;5;112m" << "Success: " << "\u001b[0m" << status_struct.message << endl 
+         << "Enter command, or \'exit\' to disconnect." << "\n\n";
 }
 
 string Client::read_command() {
-    cout << ">>> ";
+    cout << "\u001b[38;5;112m" << ">>> " << "\u001b[0m";
     string s;
     getline(cin, s);
 
@@ -52,6 +53,8 @@ string Client::read_command() {
         cout << "Input is too large (Max input size - 2048 symb). Try again." << endl;
         return "";
     }
+    if (s == "exit") exit(1);
+
     return s;
 }
 
@@ -80,6 +83,10 @@ void Client::run() {
         string command = read_command();
         if (command.empty()) continue;
         string response = process_command(command);
-        cout << response << endl;
+        cout << response << endl << endl;
     }
+}
+
+SOCKET Client::get_socket() {
+    return sock;
 }

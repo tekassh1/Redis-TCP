@@ -23,6 +23,8 @@ class Client {
 public:
     Client(int port);
     void run();
+
+    SOCKET get_socket();
 };
 
 #endif
