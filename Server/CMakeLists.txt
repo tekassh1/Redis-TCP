@@ -4,8 +4,6 @@ project(Server)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_compile_definitions(_HAS_STD_BYTE=0)
-
 include_directories(${CMAKE_SOURCE_DIR}/include)
 file(GLOB_RECURSE SOURCES "src/*.cpp" "main.cpp")
 

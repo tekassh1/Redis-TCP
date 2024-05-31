@@ -36,7 +36,8 @@ Client::Client(int port) {
     if (!status_struct.connected) {
         string recieved(status_struct.message);
         string err_msg = "Error: " + recieved;
-        throw runtime_error(err_msg);
+        cout << err_msg << endl;
+        exit(1);
     }
     cout << "\u001b[38;5;112m" << "Success: " << "\u001b[0m" << status_struct.message << endl 
          << "Enter command, or \'exit\' to disconnect." << "\n\n";
