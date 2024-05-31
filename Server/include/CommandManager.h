@@ -24,7 +24,7 @@ class CommandManager {
 public:
     static void init_commands();
     static DWORD WINAPI process_commands(LPVOID sock_pointer);
-    static string read_request(ConnectionInfo* connection_info);
+    static string read_request(shared_ptr<ConnectionInfo> connection_info);
 };
 
 #endif

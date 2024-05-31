@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Put::execute(ConnectionInfo* connection_info, vector<string> args) {
+void Put::execute(shared_ptr<ConnectionInfo> connection_info, vector<string> args) {
     if (args.size() < 2) {
         connection_info->connectionManager->send_command_response(
             connection_info->sock,

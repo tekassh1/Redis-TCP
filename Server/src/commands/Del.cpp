@@ -7,7 +7,7 @@
 
 using namespace std;
 
-void Del::execute(ConnectionInfo* connection_info, vector<string> args) {
+void Del::execute(shared_ptr<ConnectionInfo> connection_info, vector<string> args) {
     if (args.size() < 1) {
         connection_info->connectionManager->send_command_response(
             connection_info->sock,

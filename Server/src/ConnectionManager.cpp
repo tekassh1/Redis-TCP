@@ -55,7 +55,7 @@ void ConnectionManager::run() {
             continue;
         }
 
-        ConnectionInfo* connection_info = new ConnectionInfo;
+        shared_ptr<ConnectionInfo> connection_info = make_shared<ConnectionInfo>();
         connection_info->connectionManager = this;
         connection_info->databaseManager = &databaseManager;
         connection_info->sock = new_connection;
@@ -67,7 +67,7 @@ void ConnectionManager::run() {
             cout << "Client connected!" << endl;
             send_connection_status(new_connection, true, "Connection with server established!");
             connections_am++;
-            CreateThread(NULL, 0, CommandManager::process_commands, (LPVOID) (connection_info), NULL, NULL);
+            CreateThread(NULL, 0, CommandManager::process_commands, (LPVOID) (&connection_info), NULL, NULL);
         }
     }
 }

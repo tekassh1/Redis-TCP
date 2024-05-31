@@ -16,8 +16,8 @@ void CommandManager::init_commands() {
 }
 
 DWORD WINAPI CommandManager::process_commands(LPVOID lpvoid_pointer) {
-    ConnectionInfo* connection_info = (ConnectionInfo*) lpvoid_pointer;
-    
+    shared_ptr<ConnectionInfo> connection_info((ConnectionInfo*) lpvoid_pointer);
+
     while (true) {
         string request = read_request(connection_info);
         vector<string> splitted = split(request, ' ');
@@ -45,7 +45,7 @@ DWORD WINAPI CommandManager::process_commands(LPVOID lpvoid_pointer) {
     }
 }
 
-string CommandManager::read_request(ConnectionInfo* connection_info) {
+string CommandManager::read_request(shared_ptr<ConnectionInfo> connection_info) {
     int req_size;
     int status1 = recv(connection_info->sock, (char*) &req_size, sizeof(int), NULL);
 
@@ -53,7 +53,6 @@ string CommandManager::read_request(ConnectionInfo* connection_info) {
         cout << "Connection closed by client." << endl;
         connection_info->connectionManager->discconect_user();
         closesocket(connection_info->sock);
-        delete connection_info;
         ExitThread(0);
     }
 
@@ -65,7 +64,6 @@ string CommandManager::read_request(ConnectionInfo* connection_info) {
         cout << "Connection closed by client." << endl;
         connection_info->connectionManager->discconect_user();
         closesocket(connection_info->sock);
-        delete connection_info;
         ExitThread(0);
     }
 
