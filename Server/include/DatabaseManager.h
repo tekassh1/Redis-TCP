@@ -3,18 +3,17 @@
 
 #include <unordered_map>
 #include <string>
-
-using namespace std;
+#include <mutex>
+#include <shared_mutex>
 
 class DatabaseManager {
-
-    unordered_map<string, string> storage;
-
+    std::unordered_map<std::string, std::string> storage;
+    std::shared_mutex storage_mutex;
 public:
-    string put(string key, string value);
-    string get(string key);
-    string del(string key);
-    string count();
+    std::string put(std::string key, std::string value);
+    std::string get(std::string key);
+    std::string del(std::string key);
+    std::string count();
 };
 
 #endif

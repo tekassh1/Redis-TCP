@@ -7,12 +7,10 @@
 
 struct ConnectionInfo;
 
-using namespace std;
-
 class Command {
 public:
     virtual ~Command() = default;
-    virtual void execute(shared_ptr<ConnectionInfo> connection_info, vector<string> args) = 0;
+    virtual void execute(std::shared_ptr<ConnectionInfo> connection_info, std::vector<std::string> args) = 0;
 };
 
 #endif

@@ -88,16 +88,12 @@ void ConnectionManager::send_connection_status(SOCKET sock, bool status, string 
     send(sock, buffer, sizeof(ConnectionStatus), NULL);
 }
 
-void ConnectionManager::send_command_response(SOCKET sock, string resp_msg) {
-    int response_size = resp_msg.size();
-    send(sock, (char*) &response_size, sizeof(int), NULL);
-    send(sock, resp_msg.c_str(), response_size, NULL);
-}
-
 int ConnectionManager::get_connections_am() {
+    lock_guard<mutex> lock(connection_am_mutex);
     return connections_am;
 }
 
 void ConnectionManager::discconect_user() {
+    lock_guard<mutex> lock(connection_am_mutex);
     connections_am--;
 }

@@ -11,8 +11,6 @@
 #include "DatabaseManager.h"
 #include "Commands.h"
 
-using namespace std;
-
 struct ConnectionInfo {
     ConnectionManager* connectionManager;
     DatabaseManager* databaseManager;
@@ -20,12 +18,12 @@ struct ConnectionInfo {
 };
 
 class CommandManager {
-    static unordered_map<string, unique_ptr<Command>> command_map;
+    static std::unordered_map<std::string, std::unique_ptr<Command>> command_map;
 public:
     static void init_commands();
-    static string get_commands_string();
-    static void process_commands(shared_ptr<ConnectionInfo> connection_info);
-    static string read_request(shared_ptr<ConnectionInfo> connection_info);
+    static std::string get_commands_string();
+    static void process_commands(std::shared_ptr<ConnectionInfo> connection_info);
+    static void send_command_response(SOCKET sock, std::string resp_msg);
 };
 
 #endif
