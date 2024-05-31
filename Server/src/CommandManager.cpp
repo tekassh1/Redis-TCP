@@ -15,9 +15,19 @@ void CommandManager::init_commands() {
     command_map.emplace("COUNT", make_unique<Count>());
 }
 
-DWORD WINAPI CommandManager::process_commands(LPVOID lpvoid_pointer) {
-    shared_ptr<ConnectionInfo> connection_info((ConnectionInfo*) lpvoid_pointer);
+string CommandManager::get_commands_string() {
+    string res = "";
+    auto it = command_map.begin();
+    while (it != command_map.end()) {
+        if (next(it) == command_map.end()) res += it->first;
+        else res += it->first + ", ";
+        it++;
+    }
+    return res;
+}
 
+void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info) {
+    
     while (true) {
         string request = read_request(connection_info);
         vector<string> splitted = split(request, ' ');
@@ -39,7 +49,7 @@ DWORD WINAPI CommandManager::process_commands(LPVOID lpvoid_pointer) {
         else {
             connection_info->connectionManager->send_command_response (
                 connection_info->sock,
-                "Wrong command, availavle commands are GET, PUT, DEL, COUNT."
+                "Wrong command, availavle commands are " + get_commands_string() + "."
             );
         }
     }

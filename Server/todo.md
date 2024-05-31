@@ -1,2 +1,3 @@
 make connections_am atomic
-Connection info dynamic memory clear
+"Wrong command, availavle commands are GET, PUT, DEL, COUNT." load from map keys;
+проверить число корректную обработку лимита соединений

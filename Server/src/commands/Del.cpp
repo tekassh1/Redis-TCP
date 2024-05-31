@@ -13,6 +13,7 @@ void Del::execute(shared_ptr<ConnectionInfo> connection_info, vector<string> arg
             connection_info->sock,
             "You should pass <key> argument for DEL command."
         );
+        return;
     }
 
     regex pattern("^[0-9a-zA-Z]+$");
@@ -21,6 +22,7 @@ void Del::execute(shared_ptr<ConnectionInfo> connection_info, vector<string> arg
             connection_info->sock,
             "<key> arg should contain only digits (0-9) and letters (a-z, A-Z)."
         );
+        return;
     }
 
     string res = connection_info->databaseManager->del(args[0]);

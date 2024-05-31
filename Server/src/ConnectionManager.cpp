@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <minwindef.h>
+#include <thread>
 
 #include <iostream>
 
@@ -67,7 +68,8 @@ void ConnectionManager::run() {
             cout << "Client connected!" << endl;
             send_connection_status(new_connection, true, "Connection with server established!");
             connections_am++;
-            CreateThread(NULL, 0, CommandManager::process_commands, (LPVOID) (&connection_info), NULL, NULL);
+            thread t(CommandManager::process_commands, connection_info);
+            t.detach();
         }
     }
 }

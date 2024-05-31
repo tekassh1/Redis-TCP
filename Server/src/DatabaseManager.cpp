@@ -6,12 +6,13 @@ string DatabaseManager::put(string key, string value) {
     string last = "";
     if (storage.find(key) != storage.end()) last = storage[key];
     storage[key] = value;
-    return "OK" + (last == "") ? last : " " + last; 
+    if (last == "") return "OK";
+    else return "OK " + last;
 }
 
 string DatabaseManager::get(string key) {
     if (storage.find(key) == storage.end()) return "NE";
-    else return storage[key];
+    else return "OK " + storage[key];
 }
 
 string DatabaseManager::del(string key) {
@@ -22,5 +23,5 @@ string DatabaseManager::del(string key) {
 }
 
 string DatabaseManager::count() {
-    return "OK " + storage.size();
+    return "OK " + to_string(storage.size());
 }
