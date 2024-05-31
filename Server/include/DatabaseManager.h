@@ -14,6 +14,9 @@ public:
     std::string get(std::string key);
     std::string del(std::string key);
     std::string count();
+    
+    std::string dump(std::string filename);
+    std::string load(std::string filename);
 };
 
 #endif

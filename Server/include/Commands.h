@@ -23,4 +23,12 @@ public:
     void execute(std::shared_ptr<ConnectionInfo> connection_info, std::vector<std::string> args) override;
 };
 
+class Dump : public Command {
+    void execute(std::shared_ptr<ConnectionInfo> connection_info, std::vector<std::string> args) override;
+};
+
+class Load : public Command {
+    void execute(std::shared_ptr<ConnectionInfo> connection_info, std::vector<std::string> args) override;
+};
+
 #endif

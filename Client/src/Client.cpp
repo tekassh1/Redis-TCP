@@ -60,23 +60,32 @@ string Client::read_command() {
 }
 
 string Client::process_command(string s) {
-    int command_size = s.size();
-    int send_size_status = send(sock, (char*) &command_size, sizeof(int), NULL);
-    if (send_size_status <= 0) throw runtime_error("");
-
-    int send_command_status = send(sock, s.c_str(), command_size, NULL);
+    s += "\n";
+    int send_command_status = send(sock, s.c_str(), s.length(), NULL);
     if (send_command_status <= 0) throw runtime_error("");
 
-    int resp_size;
-    int recieve_size_status = recv(sock, (char*) &resp_size, sizeof(int), NULL);
-    if (recieve_size_status <= 0) throw runtime_error("");
-
-    char response[resp_size + 1];
-    response[resp_size] = '\0';
-    int recieve_reponse_status = recv(sock, response, resp_size, NULL);
+    char buffer[BUFFER_SIZE];
+    int recieve_reponse_status = recv(sock, buffer, BUFFER_SIZE, NULL);
     if (recieve_reponse_status <= 0) throw runtime_error("");
 
+    string response = parse_reponse(buffer);
+    if (response.empty()) {
+        cout << "Server error. Wrong command format. String should end with 'LF' or 'CR LF'.";
+        exit(1);
+    }
     return response;
+}
+
+string Client::parse_reponse(char buffer[BUFFER_SIZE]) {
+    string message;
+
+    for (size_t i = 0; i < BUFFER_SIZE; i++) {
+        if (buffer[i] == '\n' || (buffer[i] == '\r' && (i + 1 < BUFFER_SIZE) && buffer[i + 1] == '\n')) {
+            message = string(buffer, i);
+            break;
+        }
+    }
+    return message;
 }
 
 void Client::run() {

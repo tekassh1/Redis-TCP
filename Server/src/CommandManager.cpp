@@ -13,6 +13,8 @@ void CommandManager::init_commands() {
     command_map.emplace("GET", make_unique<Get>());
     command_map.emplace("DEL", make_unique<Del>());
     command_map.emplace("COUNT", make_unique<Count>());
+    command_map.emplace("DUMP", make_unique<Dump>());
+    command_map.emplace("LOAD", make_unique<Load>());
 }
 
 string CommandManager::get_commands_string() {
@@ -27,30 +29,26 @@ string CommandManager::get_commands_string() {
 }
 
 void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info) {
+
     while (true) {
-        int req_size;
-        int status1 = recv(connection_info->sock, (char*) &req_size, sizeof(int), NULL);
 
-        if (status1 <= 0) {
+        char buffer[BUFFER_SIZE];
+        int status = recv(connection_info->sock, buffer, BUFFER_SIZE, NULL);
+
+        if (status <= 0) {
             cout << "Connection closed by client." << endl;
             connection_info->connectionManager->discconect_user();
             closesocket(connection_info->sock);
             ExitThread(0);
         }
 
-        char request[req_size + 1];
-        request[req_size] = '\0';
-        int status2 = recv(connection_info->sock, request, req_size, NULL);
-
-        if (status2 <= 0) {
-            cout << "Connection closed by client." << endl;
-            connection_info->connectionManager->discconect_user();
-            closesocket(connection_info->sock);
-            ExitThread(0);
+        string command = parse_command(buffer);
+        if (command.empty()) {
+            string msg = "Wrong command format. String should end with 'LF' or 'CR LF'.";
+            send_command_response(connection_info->sock, msg);
         }
 
-        string command(request);
-        vector<string> splitted = split(request, ' ');
+        vector<string> splitted = split(command, ' ');
 
         if (splitted.empty()) {
             string msg = "Wrong request format '<command> <key> <value>', you should input at least <command>";
@@ -72,7 +70,18 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
 }
 
 void CommandManager::send_command_response(SOCKET sock, string resp_msg) {
-    int response_size = resp_msg.size();
-    send(sock, (char*) &response_size, sizeof(int), NULL);
-    send(sock, resp_msg.c_str(), response_size, NULL);
+    resp_msg += "\n";
+    send(sock, resp_msg.c_str(), resp_msg.length(), NULL);
+}
+
+string CommandManager::parse_command(char buffer[BUFFER_SIZE]) {
+    string message;
+
+    for (size_t i = 0; i < BUFFER_SIZE; i++) {
+        if (buffer[i] == '\n' || (buffer[i] == '\r' && (i + 1 < BUFFER_SIZE) && buffer[i + 1] == '\n')) {
+            message = string(buffer, i);
+            break;
+        }
+    }
+    return message;
 }

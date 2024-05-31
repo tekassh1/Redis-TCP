@@ -11,6 +11,8 @@
 #include "DatabaseManager.h"
 #include "Commands.h"
 
+#define BUFFER_SIZE 1024
+
 struct ConnectionInfo {
     ConnectionManager* connectionManager;
     DatabaseManager* databaseManager;
@@ -19,6 +21,7 @@ struct ConnectionInfo {
 
 class CommandManager {
     static std::unordered_map<std::string, std::unique_ptr<Command>> command_map;
+    static std::string parse_command(char buffer[BUFFER_SIZE]);
 public:
     static void init_commands();
     static std::string get_commands_string();

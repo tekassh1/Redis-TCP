@@ -5,8 +5,7 @@
 #include <string>
 
 #define LOCALHOST_ADDR "127.0.0.1"
-
-using namespace std;
+#define BUFFER_SIZE 1024
 
 struct ConnectionStatus {
     bool connected;
@@ -17,9 +16,9 @@ class Client {
     int port;
     SOCKET sock;
 
-    string read_command();
-    string process_command(string s);
-
+    std::string read_command();
+    std::string process_command(std::string s);
+    std::string parse_reponse(char buffer[BUFFER_SIZE]);
 public:
     Client(int port);
     void run();
