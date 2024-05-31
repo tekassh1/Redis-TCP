@@ -1,7 +1,19 @@
 #include <vector>
+#include <unordered_map>
+#include <memory>
 
 #include "CommandManager.h"
 #include "util.h"
+
+using namespace std;
+
+unordered_map<string, unique_ptr<Command>> CommandManager::command_map;
+void CommandManager::init_commands() {
+    command_map.emplace("PUT", make_unique<Put>());
+    command_map.emplace("GET", make_unique<Get>());
+    command_map.emplace("DEL", make_unique<Del>());
+    command_map.emplace("COUNT", make_unique<Count>());
+}
 
 DWORD WINAPI CommandManager::process_commands(LPVOID lpvoid_pointer) {
     ConnectionInfo* connection_info = (ConnectionInfo*) lpvoid_pointer;
@@ -10,37 +22,19 @@ DWORD WINAPI CommandManager::process_commands(LPVOID lpvoid_pointer) {
         string request = read_request(connection_info);
         vector<string> splitted = split(request, ' ');
 
-        if (splitted.size() < 1) {
+        if (splitted.empty()) {
             connection_info->connectionManager->send_command_response (
                 connection_info->sock,
                 "Wrong request format '<command> <key> <value>', you should input at least <command>"
             );
         }
         
-        string command = splitted[0];
-        if (command == "PUT") {
-            connection_info->connectionManager->send_command_response (
-                connection_info->sock,
-                "You asked PUT command"
-            );
-        }
-        else if (command == "GET") {
-            connection_info->connectionManager->send_command_response (
-                connection_info->sock,
-                "You asked GET command"
-            );
-        }
-        else if (command == "DEL") {
-            connection_info->connectionManager->send_command_response (
-                connection_info->sock,
-                "You asked DEL command"
-            );
-        }
-        else if (command == "COUNT") {
-            connection_info->connectionManager->send_command_response (
-                connection_info->sock,
-                "You asked COUNT command"
-            );
+        string command_name = splitted[0];
+        vector<string> args(splitted.begin() + 1, splitted.end());
+
+        auto it = command_map.find(command_name);
+        if (it != command_map.end()) {
+            it->second->execute(connection_info, args);
         }
         else {
             connection_info->connectionManager->send_command_response (

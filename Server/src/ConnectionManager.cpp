@@ -43,7 +43,9 @@ ConnectionManager::ConnectionManager(int port, int max_connections) {
 }
 
 void ConnectionManager::run() {
-
+    DatabaseManager databaseManager;
+    CommandManager::init_commands();
+    
     while (true) {
         SOCKET new_connection = accept(s_listen, (SOCKADDR*) &addr, &sizeofaddr);
 
@@ -55,6 +57,7 @@ void ConnectionManager::run() {
 
         ConnectionInfo* connection_info = new ConnectionInfo;
         connection_info->connectionManager = this;
+        connection_info->databaseManager = &databaseManager;
         connection_info->sock = new_connection;
 
         if (new_connection == 0) {
