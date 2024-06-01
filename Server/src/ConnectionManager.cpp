@@ -50,11 +50,7 @@ void ConnectionManager::run() {
     while (true) {
         SOCKET new_connection = accept(s_listen, (SOCKADDR*) &addr, &sizeofaddr);
 
-        if (connections_am == max_connections) {
-            send_connection_status(new_connection, false, "Server max amount of connections is reached. Please, try later.");
-            closesocket(new_connection);
-            continue;
-        }
+        if (!validate_connection(new_connection)) continue;
 
         shared_ptr<ConnectionInfo> connection_info = make_shared<ConnectionInfo>();
         connection_info->connectionManager = this;
@@ -72,6 +68,15 @@ void ConnectionManager::run() {
             t.detach();
         }
     }
+}
+
+bool ConnectionManager::validate_connection(SOCKET sock) {
+    if (connections_am == max_connections) {
+        send_connection_status(sock, false, "Server max amount of connections is reached. Please, try later.");
+        closesocket(sock);
+        return false;
+    }
+    return true;
 }
 
 void ConnectionManager::send_connection_status(SOCKET sock, bool status, string s_msg) {
@@ -93,7 +98,7 @@ int ConnectionManager::get_connections_am() {
     return connections_am;
 }
 
-void ConnectionManager::discconect_user() {
+void ConnectionManager::disconnect_user() {
     lock_guard<mutex> lock(connection_am_mutex);
     connections_am--;
 }

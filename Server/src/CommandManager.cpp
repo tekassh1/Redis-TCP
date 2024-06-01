@@ -37,7 +37,7 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
 
         if (status <= 0) {
             cout << "Connection closed by client." << endl;
-            connection_info->connectionManager->discconect_user();
+            connection_info->connectionManager->disconnect_user();
             closesocket(connection_info->sock);
             ExitThread(0);
         }
@@ -71,7 +71,7 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
 
 void CommandManager::send_command_response(SOCKET sock, string resp_msg) {
     resp_msg += "\n";
-    send(sock, resp_msg.c_str(), resp_msg.length(), NULL);
+    send(sock, resp_msg.c_str(), resp_msg.length(), 0);
 }
 
 string CommandManager::parse_command(char buffer[BUFFER_SIZE]) {
