@@ -10,6 +10,7 @@ class DatabaseManager {
     std::unordered_map<std::string, std::string> storage;
     std::shared_mutex storage_mutex;
 public:
+    std::unordered_map<std::string, std::string>* get_storage();
     std::string put(std::string key, std::string value);
     std::string get(std::string key);
     std::string del(std::string key);

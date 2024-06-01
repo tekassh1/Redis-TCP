@@ -89,3 +89,7 @@ string DatabaseManager::load(string filename) {
     in_file.close();
     return "Dump from file '" + filename + "' was successfully uploaded. All keys have been overwritten.";
 }
+
+unordered_map<string, string>* DatabaseManager::get_storage() {
+    return &storage;
+}

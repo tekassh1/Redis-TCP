@@ -22,13 +22,12 @@ struct ConnectionInfo {
 
 class CommandManager {
     static std::unordered_map<std::string, std::unique_ptr<Command>> command_map;
-    static std::string parse_command(char buffer[BUFFER_SIZE]);
 
-    FRIEND_TEST(CommandManagerTest, ParseCommandTest);
-    
+    FRIEND_TEST(command_manager_tests, init_commands_test);
 public:
     static void init_commands();
     static std::string get_commands_string();
+    static std::string parse_command(char buffer[BUFFER_SIZE]);
     static void process_commands(std::shared_ptr<ConnectionInfo> connection_info);
     static void send_command_response(SOCKET sock, std::string resp_msg);
 };
