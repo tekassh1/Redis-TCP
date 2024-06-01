@@ -27,7 +27,7 @@ class ConnectionManager {
     int connections_am;
 
     std::mutex connection_am_mutex;
-
+    
 public:
     ConnectionManager(int port, int max_connections);
     void run();

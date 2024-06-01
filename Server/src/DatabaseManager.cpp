@@ -37,7 +37,7 @@ string DatabaseManager::del(string key) {
 
 string DatabaseManager::count() {
     shared_lock<shared_mutex> lock(storage_mutex);
-
+    
     return "OK " + to_string(storage.size());
 }
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <unordered_map>
+#include <gtest/gtest.h>
 
 #include "ConnectionManager.h"
 #include "DatabaseManager.h"
@@ -22,6 +23,9 @@ struct ConnectionInfo {
 class CommandManager {
     static std::unordered_map<std::string, std::unique_ptr<Command>> command_map;
     static std::string parse_command(char buffer[BUFFER_SIZE]);
+
+    FRIEND_TEST(CommandManagerTest, ParseCommandTest);
+    
 public:
     static void init_commands();
     static std::string get_commands_string();
