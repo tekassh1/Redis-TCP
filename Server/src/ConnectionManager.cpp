@@ -3,6 +3,7 @@
 #include <winsock2.h>
 #include <minwindef.h>
 #include <thread>
+#include <spdlog/spdlog.h>
 
 #include <iostream>
 
@@ -23,7 +24,7 @@ ConnectionManager::ConnectionManager(int port, int max_connections) {
     if (WSAStartup(dll_version, &wsa_data) != 0)
         throw std::runtime_error("Error while server socket declaration.");
     
-    spdlog::info("Sockets are initialized.");
+    spdlog::info("Socket are initialized.");
 
     sizeofaddr = sizeof(addr);
     InetPton(AF_INET, LOCALHOST_ADDR, &addr.sin_addr.s_addr);
@@ -67,7 +68,7 @@ void ConnectionManager::run() {
             spdlog::warn("Client connection error!");
         }
         else {
-            spdlog::info("Client with IP:{} connected!", get_client_ip(new_connection));
+            spdlog::info("IP: {}. Client connected.", get_client_ip(new_connection));
 
             send_connection_status(new_connection, true, "Connection with server established!");
             connections_am++;
@@ -81,7 +82,7 @@ bool ConnectionManager::validate_connection(SOCKET sock) {
 
     if (connections_am == max_connections) {
         string msg = "Server max amount of connections is reached.";
-        spdlog::warn(msg + "Client with IP: {} disconnected.", get_client_ip(sock));
+        spdlog::warn("IP: {} disconnected. " + msg, get_client_ip(sock));
 
         send_connection_status(sock, false, msg + "Please, try later.");
         closesocket(sock);

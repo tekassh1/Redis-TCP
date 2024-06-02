@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <numeric>
 #include <unordered_map>
 #include <spdlog/spdlog.h>
 
@@ -68,7 +69,9 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
 
         auto it = command_map.find(command_name);
         if (it != command_map.end()) {
+            
             string msg = "Executing user " + command_name + " command.";
+
             spdlog::info("IP: {}. " + msg, get_client_ip(connection_info->sock));
 
             it->second->execute(connection_info, args);

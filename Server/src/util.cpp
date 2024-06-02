@@ -6,6 +6,7 @@
 #include <iostream>
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+#include <numeric>
 
 std::vector<std::string> split(const std::string& str, char delimiter) {
     std::vector<std::string> tokens;
@@ -47,6 +48,7 @@ std::string get_client_ip(SOCKET sock) {
     sockaddr_in addr;
     socklen_t addr_len = sizeof(addr);
     char client_ip[INET_ADDRSTRLEN];
+    getpeername(sock, (sockaddr*)&addr, &addr_len);
     inet_ntop(AF_INET, &addr.sin_addr, client_ip, INET_ADDRSTRLEN);
     return std::string(client_ip);
 }
