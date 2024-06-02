@@ -11,5 +11,6 @@ enable_testing()
 
 add_subdirectory(src)
 add_subdirectory(tests)
+add_subdirectory(external/spdlog)
 
 # cmake -G "MinGW Makefiles" .. (call from build dir)

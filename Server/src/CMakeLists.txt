@@ -13,7 +13,7 @@ list(APPEND SOURCE_FILES ${COMMAND_SOURCE_FILES})
 
 add_library(Lib STATIC ${SOURCE_FILES})
 target_include_directories(Lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
-target_link_libraries(Lib PUBLIC gtest)
+target_link_libraries(Lib PUBLIC gtest spdlog::spdlog)
 
 add_executable(Server main.cpp)
-target_link_libraries(Server PRIVATE Lib ws2_32)
+target_link_libraries(Server PRIVATE Lib ws2_32 spdlog::spdlog)
