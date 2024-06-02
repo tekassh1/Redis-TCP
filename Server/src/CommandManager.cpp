@@ -1,6 +1,8 @@
 #include <vector>
-#include <unordered_map>
+#include <string>
 #include <memory>
+#include <unordered_map>
+#include <spdlog/spdlog.h>
 
 #include "CommandManager.h"
 #include "util.h"
@@ -15,6 +17,8 @@ void CommandManager::init_commands() {
     command_map.emplace("COUNT", make_unique<Count>());
     command_map.emplace("DUMP", make_unique<Dump>());
     command_map.emplace("LOAD", make_unique<Load>());
+
+    spdlog::info("Commands {} are initialized.", CommandManager::get_commands_string());
 }
 
 string CommandManager::get_commands_string() {
@@ -36,7 +40,8 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
         int status = recv(connection_info->sock, buffer, BUFFER_SIZE, NULL);
 
         if (status <= 0) {
-            cout << "Connection closed by client." << endl;
+            spdlog::info("IP: {}. Connection closed by client.", get_client_ip(connection_info->sock));
+
             connection_info->connectionManager->disconnect_user();
             closesocket(connection_info->sock);
             ExitThread(0);
@@ -45,6 +50,8 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
         string command = parse_command(buffer);
         if (command.empty()) {
             string msg = "Wrong command format. String should end with 'LF' or 'CR LF'.";
+            spdlog::warn("IP: {}. " + msg, get_client_ip(connection_info->sock));
+
             send_command_response(connection_info->sock, msg);
         }
 
@@ -52,6 +59,7 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
 
         if (splitted.empty()) {
             string msg = "Wrong request format '<command> <key> <value>', you should input at least <command>";
+            spdlog::warn("IP: {}. " + msg, get_client_ip(connection_info->sock));
             send_command_response(connection_info->sock, msg);
         }
 
@@ -60,10 +68,14 @@ void CommandManager::process_commands(shared_ptr<ConnectionInfo> connection_info
 
         auto it = command_map.find(command_name);
         if (it != command_map.end()) {
+            string msg = "Executing user " + command_name + " command.";
+            spdlog::info("IP: {}. " + msg, get_client_ip(connection_info->sock));
+
             it->second->execute(connection_info, args);
         }
         else {
             string msg = "Wrong command, availavle commands are " + get_commands_string() + ".";
+            spdlog::warn("IP: {}. " + msg, get_client_ip(connection_info->sock));
             send_command_response(connection_info->sock, msg);
         }
     }

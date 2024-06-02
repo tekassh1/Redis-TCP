@@ -6,9 +6,11 @@
 
 #include <iostream>
 
+#include "SerializationManager.h"
 #include "ConnectionManager.h"
 #include "CommandManager.h"
-#include "SerializationManager.h"
+#include "LoggingManager.h"
+#include "util.h"
 
 using namespace std;
 
@@ -20,6 +22,8 @@ ConnectionManager::ConnectionManager(int port, int max_connections) {
 
     if (WSAStartup(dll_version, &wsa_data) != 0)
         throw std::runtime_error("Error while server socket declaration.");
+    
+    spdlog::info("Sockets are initialized.");
 
     sizeofaddr = sizeof(addr);
     InetPton(AF_INET, LOCALHOST_ADDR, &addr.sin_addr.s_addr);
@@ -36,11 +40,13 @@ ConnectionManager::ConnectionManager(int port, int max_connections) {
     if (bind_status == -1)
         throw std::runtime_error("All ports from 49152 to 65535 are busy. Please, try later.");
 
+    spdlog::info("Socket has been successfully bound.");
     this->port = port;
 
     connections_am = 0;
     listen(s_listen, SOMAXCONN);
-    cout << "The server has successfully launched on port " << "\u001b[38;5;112m" << port << "\u001b[0m" << endl;
+
+    spdlog::info("The server has successfully launched on port \033[38;5;112m{}\033[0m", port);
 }
 
 void ConnectionManager::run() {
@@ -58,10 +64,11 @@ void ConnectionManager::run() {
         connection_info->sock = new_connection;
 
         if (new_connection == 0) {
-            cout << "Client connection error!" << endl;
+            spdlog::warn("Client connection error!");
         }
         else {
-            cout << "Client connected!" << endl;
+            spdlog::info("Client with IP:{} connected!", get_client_ip(new_connection));
+
             send_connection_status(new_connection, true, "Connection with server established!");
             connections_am++;
             thread t(CommandManager::process_commands, connection_info);
@@ -71,8 +78,12 @@ void ConnectionManager::run() {
 }
 
 bool ConnectionManager::validate_connection(SOCKET sock) {
+
     if (connections_am == max_connections) {
-        send_connection_status(sock, false, "Server max amount of connections is reached. Please, try later.");
+        string msg = "Server max amount of connections is reached.";
+        spdlog::warn(msg + "Client with IP: {} disconnected.", get_client_ip(sock));
+
+        send_connection_status(sock, false, msg + "Please, try later.");
         closesocket(sock);
         return false;
     }

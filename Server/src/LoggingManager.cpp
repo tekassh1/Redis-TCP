@@ -7,6 +7,8 @@
 
 #include <memory>
 
+std::shared_ptr<spdlog::logger> LoggingManager::logger;
+
 void LoggingManager::init() {
 
     auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
@@ -22,8 +24,6 @@ void LoggingManager::init() {
 
     logger = std::make_shared<spdlog::logger>("multi_sink", dist_sink);
     logger->set_level(spdlog::level::debug);
-}
 
-std::shared_ptr<spdlog::logger> LoggingManager::get_logger() {
-    return logger;
+    spdlog::set_default_logger(logger);
 }

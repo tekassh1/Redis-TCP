@@ -4,6 +4,8 @@
 #include <utility>
 #include <stdexcept>
 #include <iostream>
+#include <winsock2.h>
+#include <Ws2tcpip.h>
 
 std::vector<std::string> split(const std::string& str, char delimiter) {
     std::vector<std::string> tokens;
@@ -39,4 +41,12 @@ void check_server_args(int argc, char *argv[]) {
         std::cout << "Error: " << port_exception.what() << std::endl;
         exit(1);
     }
+}
+
+std::string get_client_ip(SOCKET sock) {
+    sockaddr_in addr;
+    socklen_t addr_len = sizeof(addr);
+    char client_ip[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &addr.sin_addr, client_ip, INET_ADDRSTRLEN);
+    return std::string(client_ip);
 }
