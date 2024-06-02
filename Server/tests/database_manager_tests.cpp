@@ -97,7 +97,7 @@ TEST_F(DatabaseManagerDumpTest, dump_success_test) {
     db.get_storage()->clear();
     db.load(filename);
 
-    ASSERT_EQ(result, "Your database dump successfully saved to a '" + filename + "' file");
+    ASSERT_EQ(result, "Your database dump successfully saved to a '" + filename + "' file.");
     ASSERT_TRUE(std::filesystem::exists(filename));
     ASSERT_EQ(copied_map.size(), db.get_storage()->size());
 
@@ -148,7 +148,7 @@ TEST_F(DatabaseManagerLoadTest, load_key_pattern_match_test) {
     outfile.close();
 
     std::string result = db.load("test_dump.txt");
-    ASSERT_EQ(result, "<key> value in file should contain only digits (0-9) and letters (a-z, A-Z).");
+    ASSERT_EQ(result, "Error while file parsing. <key> value in file should contain only digits (0-9) and letters (a-z, A-Z).");
 }
 
 TEST_F(DatabaseManagerLoadTest, load_line_format_error) {

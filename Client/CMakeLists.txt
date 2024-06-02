@@ -13,5 +13,3 @@ target_link_libraries(Client ws2_32)
 
 set(CMAKE_C_COMPILER "D:/Tools/MSYS2/mingw64/bin/gcc.exe")
 set(CMAKE_CXX_COMPILER "D:/Tools/MSYS2/mingw64/bin/g++.exe")
-
-# cmake -G "MinGW Makefiles" .. (call from build dir)
